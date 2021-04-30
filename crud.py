@@ -19,6 +19,14 @@ def get_all_lang(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Lang).offset(skip).limit(limit).all()
 
 
+def add_lang(db: Session, name: str):
+    db_lang = models.Lang(name=name)
+    db.add(db_lang)
+    db.commit()
+    db.refresh(db_lang)
+    return db_lang
+
+
 def create_lang(db: Session, name: str):
     db_lang = models.Lang(name=name)
     db.add(db_lang)
@@ -53,3 +61,7 @@ def add_words(db: Session, words: List[schemas.WordCreate], lang_id: int):
     db.commit()
     db.refresh(db_words)
     return db_words
+
+
+def get_word_by_id(db: Session, word_id: int):
+    return db.query(models.Word).filter(models.Word.id == word_id).first()
