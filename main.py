@@ -24,7 +24,7 @@ tags_metadata = [
 
 app = FastAPI(title="Polyglot Challenge", openapi_tags=tags_metadata)
 
-origins = [
+'''origins = [
     "https://polyglot-challenge.herokuapp.com",
     "127.0.0.1:8000",
     "http://localhost",
@@ -38,7 +38,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+'''
 
 # Dependency
 def get_db():
