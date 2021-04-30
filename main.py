@@ -25,6 +25,7 @@ tags_metadata = [
 app = FastAPI(title="Polyglot Challenge", openapi_tags=tags_metadata)
 
 origins = [
+    "https://polyglot-challenge.herokuapp.com",
     "127.0.0.1:8000",
     "http://localhost",
     "http://localhost:8080",
