@@ -87,7 +87,7 @@ def replace_lang(lang_id: int, new_lang: schemas.LangCreate, db: Session = Depen
 
 
 @app.delete("/langs/{lang_id}", response_model=schemas.Lang, tags=['Languages'])
-def delete_word(lang_id, db: Session = Depends(get_db)):
+def delete_lang(lang_id, db: Session = Depends(get_db)):
     return crud.delete_lang(db, lang_id)
 
 
