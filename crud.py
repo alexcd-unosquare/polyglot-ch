@@ -42,9 +42,9 @@ def get_words(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Word).offset(skip).limit(limit).all()
 
 
-def get_random_words(db: Session, limit=20):
-    order = select.order_by(func.random())
-    return db.query(models.Word).order_by(order).limit(limit).all()
+def get_random_words(db: Session, limit):
+    db_words = db.query(models.Word).order_by(func.random())
+    return [db_words.first() for _ in range(limit)]
 
 
 def create_lang_word(db: Session, word: schemas.WordCreate, lang_id: int):
@@ -55,8 +55,8 @@ def create_lang_word(db: Session, word: schemas.WordCreate, lang_id: int):
     return db_word
 
 
-def add_words(db: Session, words: List[schemas.WordCreate], lang_id: int):
-    db_words = [models.Word(**word.dict(), lang_id=lang_id) for word in words]
+def add_words(db: Session, words: List[dict], lang_id: int):
+    db_words = [models.Word(**word, lang_id=lang_id) for word in words]
     db.add(db_words)
     db.commit()
     db.refresh(db_words)
@@ -65,3 +65,24 @@ def add_words(db: Session, words: List[schemas.WordCreate], lang_id: int):
 
 def get_word_by_id(db: Session, word_id: int):
     return db.query(models.Word).filter(models.Word.id == word_id).first()
+
+
+def get_random_words_by_lang(db: Session, lang_id: int, limit):
+    db_words = db.query(models.Word).order_by(func.random()).filter(models.Word.lang_id == lang_id)
+    return [db_words.first() for _ in range(limit)]
+
+
+def update_lang(db: Session, lang_id: int, new_lang: schemas.LangCreate):
+    lang = db.query(models.Lang).get(lang_id)
+    lang.name = new_lang.name
+    db.commit()
+    db.refresh(lang)
+    return lang
+
+
+def update_word(db: Session, word_id: int, new_word: schemas.WordCreate):
+    word = db.query(models.Word).get(word_id)
+
+    db.commit()
+    db.refresh(word)
+    return word

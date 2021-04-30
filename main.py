@@ -18,6 +18,10 @@ tags_metadata = [
         "name": "Words",
         "description": "Add, update or delete words.",
     },
+    {
+        "name": "Random",
+        "description": "Get randomized words by language or in general"
+    }
 ]
 
 
@@ -52,7 +56,7 @@ def get_db():
 
 @app.get('/')
 def hello():
-    return "hello"
+    return "https://polyglot-challenge.herokuapp.com/docs"
 
 
 @app.get("/langs/", response_model=List[schemas.Lang], tags=['Languages'])
@@ -60,7 +64,7 @@ def get_all_langs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     return crud.get_all_lang(db, skip=skip, limit=limit)
 
 
-@app.post("/langs/", response_model=schemas.Lang, tags=['Languages'])
+@app.post("/langs/add", response_model=schemas.Lang, tags=['Languages'])
 def add_lang(lang: schemas.LangCreate, db: Session = Depends(get_db)):
     db_lang = crud.get_lang_by_name(db, lang.name)
     if db_lang:
@@ -68,7 +72,12 @@ def add_lang(lang: schemas.LangCreate, db: Session = Depends(get_db)):
     return crud.add_lang(db, lang.name)
 
 
-@app.get("/langs/{lang_id}", response_model=schemas.Lang, tags=['Languages'])
+@app.put("/langs/{lang_id}/", response_model=schemas.Lang, tags=['Languages'])
+def replace_lang(lang_id: int, new_lang: schemas.LangCreate, db: Session = Depends(get_db)):
+    return crud.update_lang(db, lang_id, new_lang)
+
+
+@app.get("/langs/{lang_id}/", response_model=schemas.Lang, tags=['Languages'])
 def get_lang_by_id(lang_id: int, db: Session = Depends(get_db)):
     db_lang = crud.get_lang(db, lang_id=lang_id)
     if db_lang is None:
@@ -76,9 +85,19 @@ def get_lang_by_id(lang_id: int, db: Session = Depends(get_db)):
     return db_lang
 
 
-@app.post("/langs/{lang_id}/add/", response_model=schemas.Word, tags=['Words'])
+@app.post("/langs/{lang_id}/add", response_model=schemas.Word, tags=['Words'])
 def add_word_to_lang(lang_id: int, word: schemas.WordCreate, db: Session = Depends(get_db)):
     return crud.create_lang_word(db=db, word=word, lang_id=lang_id)
+
+
+@app.get("/random/{lang_id}/", response_model=List[schemas.Word], tags=['Random'])
+def get_random_by_lang(lang_id: int, db: Session = Depends(get_db), limit=20):
+    return crud.get_random_words_by_lang(db, lang_id, limit)
+
+
+@app.get("/random/", response_model=List[schemas.Word], tags=['Random'])
+def get_random_words(db: Session = Depends(get_db), limit=20):
+    return crud.get_random_words(db, limit)
 
 
 @app.get("/words/", response_model=List[schemas.Word], tags=['Words'])
@@ -90,11 +109,6 @@ def get_all_words(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 @app.get("/words/{word_id}", response_model=schemas.Word, tags=['Words'])
 def get_word(word_id: int, db: Session = Depends(get_db)):
     return crud.get_word_by_id(db, word_id)
-
-
-@app.get("/words/random", response_model=List[schemas.Word], tags=['Words'])
-def get_random_words(db: Session = Depends(get_db), num=20):
-    return crud.get_random_words(db, num)
 
 
 # Very unstable, I was unable to find a good dictionary API that could give me consistent results

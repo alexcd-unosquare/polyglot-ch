@@ -22,8 +22,8 @@ def get_def(word: str, lang='en_US'):
 
     if not definitions or not examples:
         return None
-
-    return Word(name=d[0]['word'], definition=''.join(definitions), example=''.join(examples), learned=False, times_seen=0)
+    return {'name': d[0]['word'], 'definition': ''.join(definitions), 'example': ''.join(examples), 'learned': False, 'times_seen': 0}
+    #return Word(name=d[0]['word'], definition=''.join(definitions), example=''.join(examples), learned=False, times_seen=0)
 
 
 def get_words_from_file(lang='en_US'):
