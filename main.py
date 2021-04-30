@@ -86,7 +86,7 @@ def replace_lang(lang_id: int, new_lang: schemas.LangCreate, db: Session = Depen
     return crud.update_lang(db, lang_id, new_lang)
 
 
-@app.delete("/langs/{lang_id}", response_model=models.Lang, tags=['Language'])
+@app.delete("/langs/{lang_id}", response_model=schemas.Lang, tags=['Language'])
 def delete_word(lang_id, db: Session = Depends(get_db)):
     return crud.delete_lang(db, lang_id)
 
@@ -122,12 +122,12 @@ def get_all_words(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     return words
 
 
-@app.put("/words/{word_id}/", response_model=models.Word, tags=['Words'])
+@app.put("/words/{word_id}/", response_model=schemas.Word, tags=['Words'])
 def mark_as_learned(word_id: int, db: Session = Depends(get_db)):
     return crud.update_word(db, word_id)
 
 
-@app.delete("/words/{word_id}", response_model=models.Word, tags=['Word'])
+@app.delete("/words/{word_id}", response_model=schemas.Word, tags=['Word'])
 def delete_word(word_id, db: Session = Depends(get_db)):
     return crud.delete_word(db, word_id)
 
