@@ -54,7 +54,7 @@ def get_all_langs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 
 
 @app.post("/langs/", response_model=schemas.Lang, tags=['Languages'])
-def add_lang(lang: schemas.LangCreate, db: Session):
+def add_lang(lang: schemas.LangCreate, db: Session = Depends(get_db)):
     db_lang = crud.get_lang_by_name(db, lang.name)
     if db_lang:
         raise HTTPException(status_code=400, detail="Language already exist")
@@ -81,12 +81,12 @@ def get_all_words(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 
 
 @app.get("/words/{word_id}", response_model=schemas.Word, tags=['Words'])
-def get_word(word_id: int, db: Session):
+def get_word(word_id: int, db: Session = Depends(get_db)):
     return crud.get_word_by_id(db, word_id)
 
 
 @app.get("/words/random", response_model=List[schemas.Word], tags=['Words'])
-def get_random_words(db: Session, num=20):
+def get_random_words(db: Session = Depends(get_db), num=20):
     return crud.get_random_words(db, num)
 
 
