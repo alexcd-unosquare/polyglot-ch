@@ -49,6 +49,11 @@ def get_db():
         db.close()
 
 
+@app.get('/')
+def hello():
+    return "hello"
+
+
 @app.get("/langs/", response_model=List[schemas.Lang], tags=['Languages'])
 def get_all_langs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_all_lang(db, skip=skip, limit=limit)
