@@ -1,5 +1,4 @@
 from typing import List
-from helper import get_words_from_file
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func, select
 
@@ -24,17 +23,6 @@ def add_lang(db: Session, name: str):
     db.add(db_lang)
     db.commit()
     db.refresh(db_lang)
-    return db_lang
-
-
-def create_lang(db: Session, name: str):
-    db_lang = models.Lang(name=name)
-    db.add(db_lang)
-    db.commit()
-    db.refresh(db_lang)
-    db_lang = get_lang_by_name(db, name)
-    words = get_words_from_file(name)
-    add_words(db, words, db_lang.id)
     return db_lang
 
 
@@ -80,9 +68,27 @@ def update_lang(db: Session, lang_id: int, new_lang: schemas.LangCreate):
     return lang
 
 
-def update_word(db: Session, word_id: int, new_word: schemas.WordCreate):
+def update_word(db: Session, word_id: int):
     word = db.query(models.Word).get(word_id)
 
     db.commit()
     db.refresh(word)
     return word
+
+
+def get_learned(db: Session):
+    return db.query(models.Word).filter(models.Word.learned is True).all()
+
+
+def delete_word(db: Session, word_id: int):
+    word = db.query(models.Word).filter(models.Word.id == word_id).first()
+    db.delete(word)
+    db.commit()
+    return word
+
+
+def delete_lang(db: Session, lang_id: int):
+    lang = db.query(models.Lang).filter(models.Lang.id == lang_id).first()
+    db.delete(lang)
+    db.commit()
+    return lang

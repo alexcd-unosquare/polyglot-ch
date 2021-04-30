@@ -3,6 +3,7 @@ from main import app
 
 client = TestClient(app)
 
+
 def tets_read_word():
     response = client.get('/words')
     assert response.status_code == 200

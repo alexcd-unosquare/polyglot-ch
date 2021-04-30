@@ -45,6 +45,7 @@ app.add_middleware(
 )
 '''
 
+
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -64,6 +65,14 @@ def get_all_langs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     return crud.get_all_lang(db, skip=skip, limit=limit)
 
 
+@app.get("/langs/{lang_id}/", response_model=schemas.Lang, tags=['Languages'])
+def get_lang_by_id(lang_id: int, db: Session = Depends(get_db)):
+    db_lang = crud.get_lang(db, lang_id=lang_id)
+    if db_lang is None:
+        raise HTTPException(status_code=404, detail="Language not found")
+    return db_lang
+
+
 @app.post("/langs/add", response_model=schemas.Lang, tags=['Languages'])
 def add_lang(lang: schemas.LangCreate, db: Session = Depends(get_db)):
     db_lang = crud.get_lang_by_name(db, lang.name)
@@ -77,17 +86,24 @@ def replace_lang(lang_id: int, new_lang: schemas.LangCreate, db: Session = Depen
     return crud.update_lang(db, lang_id, new_lang)
 
 
-@app.get("/langs/{lang_id}/", response_model=schemas.Lang, tags=['Languages'])
-def get_lang_by_id(lang_id: int, db: Session = Depends(get_db)):
-    db_lang = crud.get_lang(db, lang_id=lang_id)
-    if db_lang is None:
-        raise HTTPException(status_code=404, detail="Language not found")
-    return db_lang
+@app.delete("/langs/{lang_id}", response_model=models.Lang, tags=['Language'])
+def delete_word(lang_id, db: Session = Depends(get_db)):
+    return crud.delete_lang(db, lang_id)
 
 
 @app.post("/langs/{lang_id}/add", response_model=schemas.Word, tags=['Words'])
 def add_word_to_lang(lang_id: int, word: schemas.WordCreate, db: Session = Depends(get_db)):
     return crud.create_lang_word(db=db, word=word, lang_id=lang_id)
+
+
+@app.get("/words/{word_id}", response_model=schemas.Word, tags=['Words'])
+def get_word(word_id: int, db: Session = Depends(get_db)):
+    return crud.get_word_by_id(db, word_id)
+
+
+@app.get("/learned/", response_model=List[schemas.Word], tags=['Words'])
+def get_learned_words(db: Session = Depends(get_db)):
+    return crud.get_learned(db)
 
 
 @app.get("/random/{lang_id}/", response_model=List[schemas.Word], tags=['Random'])
@@ -106,15 +122,13 @@ def get_all_words(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     return words
 
 
-@app.get("/words/{word_id}", response_model=schemas.Word, tags=['Words'])
-def get_word(word_id: int, db: Session = Depends(get_db)):
-    return crud.get_word_by_id(db, word_id)
+@app.put("/words/{word_id}/", response_model=models.Word, tags=['Words'])
+def mark_as_learned(word_id: int, db: Session = Depends(get_db)):
+    return crud.update_word(db, word_id)
 
 
-# Very unstable, I was unable to find a good dictionary API that could give me consistent results
-@app.post("/langs/add/auto")
-def add_lang_with_random_words(lang: schemas.LangCreate, db: Session = Depends(get_db)):
-    db_lang = crud.get_lang_by_name(db, lang.name)
-    if db_lang:
-        raise HTTPException(status_code=400, detail="Language already exist")
-    return crud.create_lang(db, lang.name)
+@app.delete("/words/{word_id}", response_model=models.Word, tags=['Word'])
+def delete_word(word_id, db: Session = Depends(get_db)):
+    return crud.delete_word(db, word_id)
+
+
