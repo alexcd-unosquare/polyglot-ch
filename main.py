@@ -107,12 +107,12 @@ def get_learned_words(db: Session = Depends(get_db)):
 
 
 @app.get("/random/{lang_id}/", response_model=List[schemas.Word], tags=['Random'])
-def get_random_by_lang(lang_id: int, db: Session = Depends(get_db), limit=20):
+def get_random_by_lang(lang_id: int, db: Session = Depends(get_db), limit: int = 20):
     return crud.get_random_words_by_lang(db, lang_id, limit)
 
 
 @app.get("/random/", response_model=List[schemas.Word], tags=['Random'])
-def get_random_words(db: Session = Depends(get_db), limit=20):
+def get_random_words(db: Session = Depends(get_db), limit: int = 20):
     return crud.get_random_words(db, limit)
 
 

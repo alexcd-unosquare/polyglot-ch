@@ -30,7 +30,7 @@ def get_words(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Word).offset(skip).limit(limit).all()
 
 
-def get_random_words(db: Session, limit):
+def get_random_words(db: Session, limit: int):
     db_words = db.query(models.Word).order_by(func.random())
     return [db_words.first() for _ in range(limit)]
 
@@ -55,7 +55,7 @@ def get_word_by_id(db: Session, word_id: int):
     return db.query(models.Word).filter(models.Word.id == word_id).first()
 
 
-def get_random_words_by_lang(db: Session, lang_id: int, limit):
+def get_random_words_by_lang(db: Session, lang_id: int, limit: int):
     db_words = db.query(models.Word).order_by(func.random()).filter(models.Word.lang_id == lang_id)
     return [db_words.first() for _ in range(limit)]
 
