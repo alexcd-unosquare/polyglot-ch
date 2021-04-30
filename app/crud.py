@@ -1,5 +1,5 @@
 from typing import List
-from helper import get_words_from_file, get_def
+from helper import get_words_from_file
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func, select
 
